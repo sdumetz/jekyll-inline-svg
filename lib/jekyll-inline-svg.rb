@@ -21,6 +21,7 @@ PLUGINS = SvgOptimizer::DEFAULT_PLUGINS.delete_if {|plugin|
 module Jekyll
   module Tags
     class JekyllInlineSvg < Liquid::Tag
+
       VARIABLE_SYNTAX = %r!
         ^(?<variable>[^\s"']+|"[^"]*"|'[^']*')
         (?<params>.*)
@@ -42,8 +43,13 @@ module Jekyll
         #global site variable
         site = context.registers[:site]
         #check if given name is a variable. Otherwise use it as a file name
-        svg_name = context[@svg] || @svg
-        svg_file = File.join(site.source, svg_name.strip)
+        varname = @svg.match(%r{\{\{(?<name>[^\}]+)\}\}})
+        if varname
+          svg_name = context[varname["name"]]
+        else
+          svg_name = @svg
+        end
+        svg_file = Jekyll.sanitized_path(site.source, svg_name.strip)
         xml = File.open(svg_file, "rb")
         optimized = SvgOptimizer.optimize(xml.read, PLUGINS)
   	    "#{optimized.sub("<svg ","<svg #{@params} ")}"
