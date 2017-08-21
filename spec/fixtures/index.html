@@ -1,8 +1,25 @@
 ---
-
+svgname: square
 ---
 Hello world
+<div id="base">
 {% svg files/square.svg %}
+</div>
 
-{% svg files/empty.svg %}
-{% svg /files/empty.svg %}
+<div id="path">
+  <label>Resolve relative and absolute paths to site's source</label>
+  {% svg files/square.svg %}
+  {% svg /files/square.svg %}
+</div>
+
+<div id="jail">
+  <label>Resolve relative and absolute paths to site's source</label>
+  {% svg /../files/square.svg %}
+  {% svg ../files/square.svg %}
+</div>
+
+<div id="interpret">
+  <label>Interpret embedded variables</label>
+  {% svg /files/{{page.svgname}}.svg %}
+  {% svg /files/square.svg id="name-{{page.svgname}}" %}
+</div>

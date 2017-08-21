@@ -1,6 +1,6 @@
 require 'svg_optimizer'
 require 'shellwords'
-
+require 'jekyll/liquid_extensions'
 class RemoveSize < SvgOptimizer::Plugins::Base
   def process
     xml.root.remove_attribute("height")
@@ -22,8 +22,12 @@ module Jekyll
   module Tags
     class JekyllInlineSvg < Liquid::Tag
 
-      VARIABLE_SYNTAX = %r!
-        ^(?<variable>[^\s"']+|"[^"]*"|'[^']*')
+      include Jekyll::LiquidExtensions #import lookup_variable function
+      # https://github.com/jekyll/jekyll/blob/master/lib/jekyll/liquid_extensions.rb
+      # For interpoaltion, look for liquid variables
+      VARIABLE = /\{\{\s*([\w]+\.?[\w]*)\s*\}\}/i
+      PATH_SYNTAX = %r!
+        ^(?<path>[^\s"']+|"[^"]*"|'[^']*')
         (?<params>.*)
       !x
 
@@ -35,24 +39,26 @@ module Jekyll
         @svg, @params = JekyllInlineSvg.parse_params(input)
         #@logger.info(@svg +", "+@width)
       end
+      def interpolate(markup, context)
+        markup.scan VARIABLE do |variable|
+          markup = markup.gsub(VARIABLE, lookup_variable(context, variable.first))
+        end
+        markup
+      end
       def self.parse_params(input)
-        matched = input.strip.match(VARIABLE_SYNTAX)
-        return matched["variable"].strip.gsub("\"","").gsub("'",""), matched["params"].strip
+        matched = input.strip.match(PATH_SYNTAX)
+        return matched["path"].strip.gsub("\"","").gsub("'",""), matched["params"].strip
       end
       def render(context)
         #global site variable
         site = context.registers[:site]
         #check if given name is a variable. Otherwise use it as a file name
-        varname = @svg.match(%r{\{\{(?<name>[^\}]+)\}\}})
-        if varname
-          svg_name = context[varname["name"]]
-        else
-          svg_name = @svg
-        end
-        svg_file = Jekyll.sanitized_path(site.source, svg_name.strip)
+        svg_file = Jekyll.sanitized_path(site.source, interpolate(@svg,context))
+        params = interpolate(@params,context)
+
         xml = File.open(svg_file, "rb")
         optimized = SvgOptimizer.optimize(xml.read, PLUGINS)
-  	    "#{optimized.sub("<svg ","<svg #{@params} ")}"
+  	    "#{optimized.sub("<svg ","<svg #{params} ")}"
       end
     end
   end
