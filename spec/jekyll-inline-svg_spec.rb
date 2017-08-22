@@ -27,6 +27,15 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo space'")
       expect(svg).to eq("/path/to/foo space")
     end
+    it "strip leading and trailing spaces" do
+      svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params(" /path/to/foo ")
+      expect(svg).to eql("/path/to/foo")
+    end
+    # required when a variable is defined with leading/trailing space then embedded.
+    it "strip in-quote leading and trailing spaces" do
+      svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo '")
+      expect(svg).to eql("/path/to/foo")
+    end
     it "don't parse parameters" do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo space' id='bar' style=\"hello\"")
       expect(params).to eq("id='bar' style=\"hello\"")

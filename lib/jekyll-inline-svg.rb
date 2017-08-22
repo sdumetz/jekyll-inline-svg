@@ -53,7 +53,7 @@ module Jekyll
       # Does not interpret variables as it's done at render time
       def self.parse_params(input)
         matched = input.strip.match(PATH_SYNTAX)
-        return matched["path"].strip.gsub("\"","").gsub("'",""), matched["params"].strip
+        return matched["path"].gsub("\"","").gsub("'","").strip, matched["params"].strip
       end
       def render(context)
         #global site variable
