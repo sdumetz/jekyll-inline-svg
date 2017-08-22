@@ -22,8 +22,17 @@ Paths with a space should be quoted :
 
 ```
 {% svg "/path/to/foo bar.svg" %}
+# or :
+{% svg '/path/to/foo bar.svg' %}
 ```
 Otherwise anything after the first space will be considered an attribute.
+
+Liquid variables will be interpreted if enclosed in double brackets :
+
+```
+{% assign size=40 %}
+{% svg "/path/to/{{site.foo-name}}.svg" width="{{size}}" %}
+```
 
 Relative paths and absolute paths will both be interpreted from Jekyll's configured [source directory](https://jekyllrb.com/docs/configuration/). So both :
 
@@ -32,16 +41,12 @@ Relative paths and absolute paths will both be interpreted from Jekyll's configu
     {% svg "path/to/foo.svg"  %}
 ```
 
-Should resolve to `/your/site/source/path/to/foo.svg`.
+Should resolve to `/your/site/source/path/to/foo.svg`. As jekyll prevents you from getting out of the source dir, `/../drawing.svg` will also resolve to `./drawing.svg`.
 
 
 ## Safety
 
 In [safe mode](https://jekyllrb.com/docs/plugins/) (ie. on github pages), the plugin will be disabled as it's not yet trusted. However it should be "safe" as defined by [Jekyll](https://jekyllrb.com/docs/plugins/) (ie. no arbitrary code execution).
-
-However, it does not provide any ability to prevent reading from outside of source dir. For example, `/../../file.svg` is still a valid location.
-
-
 
 Some processing is done to remove useless data :
 
