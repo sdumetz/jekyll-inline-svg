@@ -43,7 +43,7 @@ module Jekyll
       #lookup Liquid variables from markup in context
       def interpolate(markup, context)
         markup.scan VARIABLE do |variable|
-          markup = markup.gsub(VARIABLE, lookup_variable(context, variable.first))
+          markup = markup.sub(VARIABLE, lookup_variable(context, variable.first))
         end
         markup
       end

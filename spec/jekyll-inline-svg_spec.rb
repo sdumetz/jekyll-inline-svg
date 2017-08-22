@@ -36,14 +36,14 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo '")
       expect(svg).to eql("/path/to/foo")
     end
+    it "keep Liquid variables" do
+      svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("/path/to/{{foo}}")
+      expect(svg).to eql("/path/to/{{foo}}")
+    end
     it "don't parse parameters" do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo space' id='bar' style=\"hello\"")
       expect(params).to eq("id='bar' style=\"hello\"")
     end
-  end
-
-  describe "Interpolate variables" do
-
   end
 
   describe "Integration" do
@@ -88,6 +88,7 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       expect(data.size).to eq(2)
       expect(data[0].to_xml).to eql(ref)
       expect(data[1].get_attribute("id")).to eql("name-square")
+      expect(data[1].get_attribute("class")).to eql("class-hello")
     end
   end
 end
