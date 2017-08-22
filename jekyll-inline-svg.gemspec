@@ -2,7 +2,11 @@
 
 Gem::Specification.new do |spec|
   spec.name        = "jekyll-inline-svg"
-  spec.summary     = "A Liquid tag for Jekyll to inline SVG images in your HTML"
+  spec.summary     = "A SVG Inliner for Jekyll"
+  spec.description = <<-EOF
+  A Liquid tag to inline and optimize SVG images in your HTML
+  Supports custom DOM Attributes parameters and variables interpretation.
+  EOF
   spec.version     = "0.0.1"
   spec.authors     = ["Sebastien DUMETZ"]
   spec.email       = "s.dumetz@holusion.com"
@@ -17,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "jekyll", "~> 3.3"
   spec.add_dependency 'svg_optimizer', "0.1.0"
 
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "rspec", "~> 3.6"
+  spec.add_development_dependency "rake", "~>12.0"
+  spec.add_development_dependency "bundler", "~> 1.15"
 end
