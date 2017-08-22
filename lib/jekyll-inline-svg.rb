@@ -1,5 +1,4 @@
 require 'svg_optimizer'
-require 'shellwords'
 require 'jekyll/liquid_extensions'
 class RemoveSize < SvgOptimizer::Plugins::Base
   # remove "width" and "height" attributes
