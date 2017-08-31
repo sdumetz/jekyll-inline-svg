@@ -45,62 +45,74 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       expect(params).to eq("id='bar' style=\"hello\"")
     end
   end
+  [
+    Jekyll.configuration({
+      "source"      => source_dir,
+      "destination" => dest_dir,
+      "url"         => "http://example.org",
+    }),
+    Jekyll.configuration({
+      "source"      => source_dir,
+      "destination" => dest_dir,
+      "url"         => "http://example.org",
+      "svg"         => { "optimize" => true}
+    })
+  ].each do |config|
+    is_opt = config["svg"] and config["svg"]["optimize"] == true
+    describe "Integration (with #{is_opt ? "" : "no"} optimisation)" do
+      before(:context) do
+        site = Jekyll::Site.new(config)
+        site.process
+        @data = parse("index.html")
+        @base = @data.css("#base").css("svg").first
+      end
+      it "render site" do
+        expect(File.exist?(dest_dir("index.html"))).to be_truthy
+      end
+      it "exports svg" do
+        data = @data.xpath("//svg")
+        expect(data).to be_truthy
+        expect(data.first).to be_truthy
+        expect(@base).to be_truthy
+        # Do not strip other width and height attributes
+      end
+      it "add a height if only width is given" do
+        data = @data.css("#height").css("svg")
+        expect(data).to be_truthy
+        expect(data[0].get_attribute("height")).to eql("24")
+        expect(data[0].get_attribute("width")).to eql("24")
+        # do not set height if given
+        expect(data[1].get_attribute("height")).to eql("48")
+        expect(data[1].get_attribute("width")).to eql("24")
+        #do not set height if forced to empty string
+        expect(data[2].get_attribute("height")).to is_opt ? be_falsy : eql("")
 
-  describe "Integration" do
-
-    before(:context) do
-      config = Jekyll.configuration({
-        "source"      => source_dir,
-        "destination" => dest_dir,
-        "url"         => "http://example.org",
-      })
-      site = Jekyll::Site.new(config)
-      site.process
-      @data = parse("index.html")
-      @base = @data.css("#base").css("svg").first
-    end
-    it "render site" do
-      expect(File.exist?(dest_dir("index.html"))).to be_truthy
-    end
-    it "exports svg" do
-      data = @data.xpath("//svg")
-      expect(data).to be_truthy
-      expect(data.first).to be_truthy
-      expect(@base).to be_truthy
-      expect(@base["width"]).to be_falsy #width property should be stripped
-      expect(@base["height"]).to be_falsy
-      # Do not strip other width and height attributes
-    end
-    it "add a height if only width is given" do
-      data = @data.css("#height").css("svg")
-      expect(data).to be_truthy
-      expect(data[0].get_attribute("height")).to eql("24")
-      expect(data[0].get_attribute("width")).to eql("24")
-      # do not set height if given
-      expect(data[1].get_attribute("height")).to eql("48")
-      expect(data[1].get_attribute("width")).to eql("24")
-      #do not set height if forced to empty string
-      expect(data[2].get_attribute("height")).to be_falsy
-      expect(data[2].get_attribute("width")).to eql("24")
-    end
-    it "parse relative paths" do
-      data = @data.css("#path").css("svg")
-      expect(data.size).to eq(2)
-      expect(data[0].to_html).to eq(data[1].to_html) #should use to_xml?
-    end
-    it "jails to Jekyll source" do
-      data = @data.css("#jail").css("svg")
-      ref = @base.to_xml
-      expect(data.size).to eq(2)
-      data.each{ |item| expect(item.to_xml).to eql(ref) }
-    end
-    it "interpret variables" do
-      data = @data.css("#interpret").css("svg")
-      ref = @base.to_xml
-      expect(data.size).to eq(2)
-      expect(data[0].to_xml).to eql(ref)
-      expect(data[1].get_attribute("id")).to eql("name-square")
-      expect(data[1].get_attribute("class")).to eql("class-hello")
+        expect(data[2].get_attribute("width")).to eql("24")
+      end
+      it "parse relative paths" do
+        data = @data.css("#path").css("svg")
+        expect(data.size).to eq(2)
+        expect(data[0].to_html).to eq(data[1].to_html) #should use to_xml?
+      end
+      it "jails to Jekyll source" do
+        data = @data.css("#jail").css("svg")
+        ref = @base.to_xml
+        expect(data.size).to eq(2)
+        data.each{ |item| expect(item.to_xml).to eql(ref) }
+      end
+      it "interpret variables" do
+        data = @data.css("#interpret").css("svg")
+        ref = @base.to_xml
+        expect(data.size).to eq(2)
+        expect(data[0].to_xml).to eql(ref)
+        expect(data[1].get_attribute("id")).to eql("name-square")
+        expect(data[1].get_attribute("class")).to eql("class-hello")
+      end
+      it "#{is_opt ? "do" : "do not"} optimize" do
+        data = @data.css("#optimize").css("svg")
+        expect(data.first.get_attribute("data-foo")).to  is_opt ? be_falsy : eql("")
+        expect(data.xpath("//comment()").first).to is_opt ? be_falsy : be_truthy
+      end
     end
   end
 end

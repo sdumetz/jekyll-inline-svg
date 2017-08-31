@@ -30,3 +30,7 @@ Hello world
   {% svg /files/{{page.svgname}}.svg %}
   {% svg /files/square.svg id="name-{{page.svgname}}" class="class-{{page.svgclass}}" %}
 </div>
+
+<div id="optimize">
+  {% svg /files/{{page.svgname}}.svg data-foo="" %}
+</div>

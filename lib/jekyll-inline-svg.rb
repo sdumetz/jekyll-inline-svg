@@ -1,21 +1,14 @@
+require "nokogiri"
 require 'svg_optimizer'
 require 'jekyll/liquid_extensions'
-class RemoveSize < SvgOptimizer::Plugins::Base
-  # remove "width" and "height" attributes
-  def process
-    xml.root.remove_attribute("height")
-    xml.root.remove_attribute("width")
-  end
-end
+
 PLUGINS_BLACKLIST = [
   SvgOptimizer::Plugins::CleanupId,
 ]
 
 PLUGINS = SvgOptimizer::DEFAULT_PLUGINS.delete_if {|plugin|
   PLUGINS_BLACKLIST.include? plugin
-}+[
-  RemoveSize
-]
+}
 
 
 module Jekyll
@@ -77,6 +70,19 @@ module Jekyll
         r = params.to_a.select{|v| v[1] != ""}.map {|v| %!#{v[0]}="#{v[1]}"!}
         r.join(" ")
       end
+      def create_plugin(params)
+        mod = Class.new(SvgOptimizer::Plugins::Base) do
+          def self.set (p)
+            @@params = p
+          end
+          def process
+            @@params.each {|key,val| xml.root.set_attribute(key,val)}
+            return xml
+          end
+        end
+        mod.set(params)
+        return mod
+      end
       def render(context)
         #global site variable
         site = context.registers[:site]
@@ -89,11 +95,16 @@ module Jekyll
           params["height"] = params["width"]
         end
         #params = @params
-        xml = File.open(svg_file, "rb").read
-        #if defined? site["svg"] and site["svg"]["optimize"] == true
-        xml = SvgOptimizer.optimize(xml, PLUGINS)
-        #end
-  	    return xml.sub("<svg ","<svg #{fmt(params)} ")
+        file = File.open(svg_file, "rb").read
+        conf = lookup_variable(context,"site.svg")
+        if conf["optimize"] == true
+          xml = SvgOptimizer.optimize(file, [create_plugin(params)] + PLUGINS)
+        else
+          xml = Nokogiri::XML(file)
+          params.each {|key,val| xml.root.set_attribute(key,val)}
+          xml = xml.to_xml
+        end
+  	    return xml
       end
     end
   end

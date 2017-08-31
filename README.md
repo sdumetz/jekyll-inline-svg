@@ -48,6 +48,9 @@ Liquid variables will be interpreted if enclosed in double brackets :
 {% assign size=40 %}
 {% svg "/path/to/{{site.foo-name}}.svg" width="{{size}}" %}
 ```
+`height` is automatically set to match `width` if omitted. It can't be left unset because IE11 won't use the viewport attribute to calculate the image's aspect ratio.
+
+
 
 Relative paths and absolute paths will both be interpreted from Jekyll's configured [source directory](https://jekyllrb.com/docs/configuration/). So both :
 
