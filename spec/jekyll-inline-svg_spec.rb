@@ -89,6 +89,13 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
 
         expect(data[2].get_attribute("width")).to eql("24")
       end
+      it "keep attributes" do
+        data = @data.css("#attributes").css("svg")
+        expect(data).to be_truthy
+        expect(data[0].get_attribute("role")).to eql("navigation")
+        expect(data[0].get_attribute("data-foo")).to eql("bar")
+        expect(data[0].get_attribute("fill")).to eql("#ffffff")
+      end
       it "parse relative paths" do
         data = @data.css("#path").css("svg")
         expect(data.size).to eq(2)
