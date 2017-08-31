@@ -74,3 +74,10 @@ Some processing is done to remove useless data :
 If any important data gets removed, or the output SVG looks different from input, it's a bug. Please file an issue to this repository describing your problem.
 
 It does not perform any input validation on attributes. They will be appended as-is to the root node.
+
+## Motivations
+
+This has been creeated specifically to display svg icons in html pages.
+
+PNG/BMP sprites are clearly a no go in a world where "a screen" can be anything from 4" to 150", ranging from 480p to 4k. So what are our vector alternatives?
+Font-icons are [bad](https://cloudfour.com/thinks/seriously-dont-use-icon-fonts/). While **xlink** looks like an ideal solution, with an elegant : `<use xlink:href="/path/to/icons.svg#play"></use>`, it's badly supported in IE (up to ie11). And embedding SVGs in an `<img>` is not going to cut it. Inlined SVG icons, in my opinion, is the best option we got right now. It's also where the industry seems to be going, with big actors like [github](https://github.com/blog/2112-delivering-octicons-with-svg) starting to transition from font-icons to inlined SVG.
