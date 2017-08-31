@@ -15,6 +15,13 @@ gems:
   - jekyll-inline-svg
 ```
 
+Optimization is opt-in and can be enabled by adding this to your `_config.yml`
+
+```
+svg:
+  optimize: true
+```
+
 ## Usage
 
 Use the Liquid tag in your pages :
