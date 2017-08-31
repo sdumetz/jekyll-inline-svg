@@ -26,9 +26,19 @@ module Jekyll
         ^(?<path>[^\s"']+|"[^"]*"|'[^']*')
         (?<params>.*)
       !x
+
+      # parse the first parameter in a string, giving :
+      #  [full_match, param_name, double_quoted_val, single_quoted_val, unquoted_val]
+      # The Regex works like :
+      # - first group
+      #    - match a group of characters that is alphanumeric, _ or -.
+      # - second group (non-capturing OR)
+      #    - match a double-quoted string
+      #    - match a single-quoted string
+      #    - match an unquoted string matching the set : [\w\.\-#]
       PARAM_SYNTAX= %r!
         ([\w-]+)\s*=\s*
-        (?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([\w\.-]+))
+        (?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([\w\.\-#]+))
       !x
 
       def initialize(tag_name, input, tokens)

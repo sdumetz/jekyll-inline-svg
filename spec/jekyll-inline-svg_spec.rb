@@ -95,6 +95,7 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
         expect(data[0].get_attribute("role")).to eql("navigation")
         expect(data[0].get_attribute("data-foo")).to eql("bar")
         expect(data[0].get_attribute("fill")).to eql("#ffffff")
+        expect(data[0].get_attribute("stroke")).to eql("#000000")
       end
       it "parse relative paths" do
         data = @data.css("#path").css("svg")
