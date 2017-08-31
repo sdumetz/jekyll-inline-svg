@@ -7,8 +7,3 @@ defaults:
       type: page
     values:
       layout: default
-  -
-    scope:
-      path: "static_files/excluded.pdf"
-    values:
-      sitemap: false

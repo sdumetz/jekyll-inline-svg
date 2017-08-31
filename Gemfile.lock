@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jekyll-inline-svg (0.0.1)
+    jekyll-inline-svg (0.0.2)
       jekyll (~> 3.3)
       svg_optimizer (= 0.1.0)
 

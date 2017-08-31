@@ -33,10 +33,13 @@ module Jekyll
         ^(?<path>[^\s"']+|"[^"]*"|'[^']*')
         (?<params>.*)
       !x
+      PARAM_SYNTAX= %r!
+        ([\w-]+)\s*=\s*
+        (?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([\w\.-]+))
+      !x
 
       def initialize(tag_name, input, tokens)
         super
-
         @svg, @params = JekyllInlineSvg.parse_params(input)
       end
 
@@ -47,23 +50,50 @@ module Jekyll
         end
         markup
       end
-
+      def split_params(markup, context)
+        params={}
+        while (match = PARAM_SYNTAX.match(markup))
+          markup = markup[match.end(0)..-1]
+          value = if match[2]
+            interpolate(match[2].gsub(%r!\\"!, '"'), context)
+          elsif match[3]
+            interpolate(match[3].gsub(%r!\\'!, "'"),context)
+          elsif match[4]
+            lookup_variable(context, match[4])
+          end
+          params[match[1]] = value
+        end
+        return params
+      end
       #Parse parameters. Returns : [svg_path, parameters]
       # Does not interpret variables as it's done at render time
       def self.parse_params(input)
         matched = input.strip.match(PATH_SYNTAX)
-        return matched["path"].gsub("\"","").gsub("'","").strip, matched["params"].strip
+        path = matched["path"].gsub("\"","").gsub("'","").strip
+        markup = matched["params"].strip
+        return path, markup
+      end
+      def fmt(params)
+        r = params.to_a.select{|v| v[1] != ""}.map {|v| %!#{v[0]}="#{v[1]}"!}
+        r.join(" ")
       end
       def render(context)
         #global site variable
         site = context.registers[:site]
         #check if given name is a variable. Otherwise use it as a file name
         svg_file = Jekyll.sanitized_path(site.source, interpolate(@svg,context))
-        params = interpolate(@params,context)
-
-        xml = File.open(svg_file, "rb")
-        optimized = SvgOptimizer.optimize(xml.read, PLUGINS)
-  	    "#{optimized.sub("<svg ","<svg #{params} ")}"
+        #replace variables with their current value
+        params = split_params(@params,context)
+        #because ie11 require to have a height AND a width
+        if params.key? "width" and ! params.key? "height"
+          params["height"] = params["width"]
+        end
+        #params = @params
+        xml = File.open(svg_file, "rb").read
+        #if defined? site["svg"] and site["svg"]["optimize"] == true
+        xml = SvgOptimizer.optimize(xml, PLUGINS)
+        #end
+  	    return xml.sub("<svg ","<svg #{fmt(params)} ")
       end
     end
   end

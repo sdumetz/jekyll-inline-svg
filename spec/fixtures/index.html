@@ -7,6 +7,12 @@ Hello world
 {% svg files/square.svg %}
 </div>
 
+<div id="height">
+{% svg files/square.svg  width=24 %}
+{% svg files/square.svg  width=24 height=48 %}
+{% svg files/square.svg  width=24 height="" %}
+</div>
+
 <div id="path">
   <label>Resolve relative and absolute paths to site's source</label>
   {% svg files/square.svg %}

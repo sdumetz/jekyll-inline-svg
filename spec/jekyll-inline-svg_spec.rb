@@ -71,6 +71,18 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       expect(@base["height"]).to be_falsy
       # Do not strip other width and height attributes
     end
+    it "add a height if only width is given" do
+      data = @data.css("#height").css("svg")
+      expect(data).to be_truthy
+      expect(data[0].get_attribute("height")).to eql("24")
+      expect(data[0].get_attribute("width")).to eql("24")
+      # do not set height if given
+      expect(data[1].get_attribute("height")).to eql("48")
+      expect(data[1].get_attribute("width")).to eql("24")
+      #do not set height if forced to empty string
+      expect(data[2].get_attribute("height")).to be_falsy
+      expect(data[2].get_attribute("width")).to eql("24")
+    end
     it "parse relative paths" do
       data = @data.css("#path").css("svg")
       expect(data.size).to eq(2)
