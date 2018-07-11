@@ -100,11 +100,22 @@ module Jekyll
         mod.set(params)
         return mod
       end
+      def add_file_to_dependency(site, path, context)
+        if context.registers[:page] && context.registers[:page].key?("path")
+          site.regenerator.add_dependency(
+            site.in_source_dir(context.registers[:page]["path"]),
+            path
+          )
+        end
+      end
+
       def render(context)
         #global site variable
         site = context.registers[:site]
         #check if given name is a variable. Otherwise use it as a file name
         svg_file = Jekyll.sanitized_path(site.source, interpolate(@svg,context))
+        return unless svg_file
+        add_file_to_dependency(site,svg_file, context)
         #replace variables with their current value
         params = split_params(@params,context)
         #because ie11 require to have a height AND a width
