@@ -13,7 +13,7 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
     Nokogiri::HTML(read(f))
   end
 
-  describe "Parse parameters" do
+  describe "#parse_params" do
     it "parse XML root parameters" do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("/path/to/foo size=40 style=\"hello\"")
       expect(svg).to eq("/path/to/foo")
@@ -43,6 +43,9 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
     it "don't parse parameters" do
       svg, params = Jekyll::Tags::JekyllInlineSvg.parse_params("'/path/to/foo space' id='bar' style=\"hello\"")
       expect(params).to eq("id='bar' style=\"hello\"")
+    end
+    it "raise error on invalid syntax" do
+      expect {Jekyll::Tags::JekyllInlineSvg.parse_params("")}.to raise_error (SyntaxError)
     end
   end
   [

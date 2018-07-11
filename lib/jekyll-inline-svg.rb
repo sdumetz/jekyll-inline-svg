@@ -23,7 +23,7 @@ module Jekyll
 
       #Separate file path from other attributes
       PATH_SYNTAX = %r!
-        ^(?<path>[^\s"']+|"[^"]*"|'[^']*')
+        ^(?<path>[^\s"']+|"[^"]+"|'[^']+')
         (?<params>.*)
       !x
 
@@ -41,9 +41,9 @@ module Jekyll
         (?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([\w\.\-#]+))
       !x
 
-      def initialize(tag_name, input, tokens)
+      def initialize(tag_name, markup, tokens)
         super
-        @svg, @params = JekyllInlineSvg.parse_params(input)
+        @svg, @params = JekyllInlineSvg.parse_params(markup)
       end
 
       #lookup Liquid variables from markup in context
@@ -70,11 +70,18 @@ module Jekyll
       end
       #Parse parameters. Returns : [svg_path, parameters]
       # Does not interpret variables as it's done at render time
-      def self.parse_params(input)
-        matched = input.strip.match(PATH_SYNTAX)
-        path = matched["path"].gsub("\"","").gsub("'","").strip
-        markup = matched["params"].strip
-        return path, markup
+      def self.parse_params(markup)
+        matched = markup.strip.match(PATH_SYNTAX)
+        if !matched
+          raise SyntaxError, <<~END
+          Syntax Error in tag 'highlight' while parsing the following markup:
+          #{markup}
+          Valid syntax: svg <path> [property=value]
+          END
+        end
+        path = matched["path"].sub(%r!^["']!,"").sub(%r!["']$!,"").strip
+        params = matched["params"].strip
+        return path, params
       end
       def fmt(params)
         r = params.to_a.select{|v| v[1] != ""}.map {|v| %!#{v[0]}="#{v[1]}"!}
