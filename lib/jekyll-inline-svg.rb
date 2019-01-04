@@ -130,7 +130,7 @@ module Jekyll
         else
           xml = Nokogiri::XML(file)
           params.each {|key,val| xml.root.set_attribute(key,val)}
-          xml = xml.to_xml
+          xml = xml.root.to_xml
         end
   	    return xml
       end

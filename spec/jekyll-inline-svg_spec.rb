@@ -66,6 +66,7 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       before(:context) do
         site = Jekyll::Site.new(config)
         site.process
+        @text = read('index.html')
         @data = parse("index.html")
         @base = @data.css("#base").css("svg").first
       end
@@ -123,6 +124,9 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
         data = @data.css("#optimize").css("svg")
         expect(data.first.get_attribute("data-foo")).to  is_opt ? be_falsy : eql("")
         expect(data.xpath("//comment()").first).to is_opt ? be_falsy : be_truthy
+      end
+      it "don't add <?xml> junk" do
+        expect(@text).not_to include("<?xml")
       end
     end
   end
