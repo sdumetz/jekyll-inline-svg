@@ -1,5 +1,6 @@
 ---
 svgname: square
+foo-bar: "hyphens-var-test"
 svgclass: hello
 ---
 Hello world
@@ -31,6 +32,8 @@ Hello world
   <label>Interpret embedded variables</label>
   {% svg /files/{{page.svgname}}.svg %}
   {% svg /files/square.svg id="name-{{page.svgname}}" class="class-{{page.svgclass}}" %}
+  {% svg /files/square.svg id="test-hyphens" class="{{page.foo-bar}}" %}
+
 </div>
 
 <div id="optimize">

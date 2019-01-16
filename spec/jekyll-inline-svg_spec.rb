@@ -115,10 +115,11 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       it "interpret variables" do
         data = @data.css("#interpret").css("svg")
         ref = @base.to_xml
-        expect(data.size).to eq(2)
+        expect(data.size).to eq(3)
         expect(data[0].to_xml).to eql(ref)
         expect(data[1].get_attribute("id")).to eql("name-square")
         expect(data[1].get_attribute("class")).to eql("class-hello")
+        expect(data[2].get_attribute("class")).to eql("hyphens-var-test")
       end
       it "#{is_opt ? "do" : "do not"} optimize" do
         data = @data.css("#optimize").css("svg")

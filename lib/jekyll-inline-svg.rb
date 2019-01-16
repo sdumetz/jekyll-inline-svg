@@ -19,7 +19,7 @@ module Jekyll
       include Jekyll::LiquidExtensions
 
       # For interpoaltion, look for liquid variables
-      VARIABLE = /\{\{\s*([\w]+\.?[\w]*)\s*\}\}/i
+      VARIABLE = /\{\{\s*([\w.\-]+)\s*\}\}/i
 
       #Separate file path from other attributes
       PATH_SYNTAX = %r!
