@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   A Liquid tag to inline and optimize SVG images in your HTML
   Supports custom DOM Attributes parameters and variables interpretation.
   EOF
-  spec.version     = "1.1.3"
+  spec.version     = "1.1.4"
   spec.authors     = ["Sebastien DUMETZ"]
   spec.email       = "s.dumetz@holusion.com"
   spec.homepage    = "https://github.com/sdumetz/jekyll-inline-svg"
@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r!^(test|spec|features)/!)
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "jekyll", "~> 3.3"
-  spec.add_dependency 'svg_optimizer', "0.1.0"
+  spec.add_dependency "jekyll", ">= 3.3", "< 5.0"
+  spec.add_dependency 'svg_optimizer', "~>0.2.5"
 
   spec.add_development_dependency "rspec", "~> 3.6"
   spec.add_development_dependency "rake", "~>12.0"
