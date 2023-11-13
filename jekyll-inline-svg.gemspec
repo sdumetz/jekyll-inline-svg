@@ -19,9 +19,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "jekyll", ">= 3.3", "< 5.0"
-  spec.add_dependency 'svg_optimizer', "~>0.2.5"
+  spec.add_dependency 'svg_optimizer', "~>0.3.0"
 
-  spec.add_development_dependency "rspec", "~> 3.6"
-  spec.add_development_dependency "rake", "~>12.0"
-  spec.add_development_dependency "bundler", "~> 1.15"
+  spec.add_development_dependency "rspec", "~>3.6"
+  spec.add_development_dependency "rake", "~>13.0"
+  spec.add_development_dependency "bundler", "~>2.0"
 end
