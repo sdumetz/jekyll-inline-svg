@@ -1,7 +1,8 @@
 # encoding: UTF-8
 
 require 'spec_helper'
-require "nokogiri"
+require 'nokogiri'
+require 'fileutils'
 
 describe(Jekyll::Tags::JekyllInlineSvg) do
 
@@ -70,6 +71,9 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
         @data = parse("index.html")
         @base = @data.css("#base").css("svg").first
       end
+      after(:context) do
+        FileUtils.remove_dir(dest_dir, true)
+      end
       it "render site" do
         expect(File.exist?(dest_dir("index.html"))).to be_truthy
       end
@@ -128,6 +132,12 @@ describe(Jekyll::Tags::JekyllInlineSvg) do
       end
       it "don't add <?xml> junk" do
         expect(@text).not_to include("<?xml")
+      end
+      it "integrates with markdown parser" do
+        mdData = parse("in_markdown.html")
+        block = mdData.css("p")[1]
+        expect(block).to be_truthy
+        expect(block.to_xml).to eql("Lorem ipsum ("+@base.to_xml+") dolor sit amet.")
       end
     end
   end
